@@ -1,35 +1,51 @@
+
 import './ItemList.css'
-import card from '../../assets/bandeja-ceramica-colores.jpg';
-import cardDos from '../../assets/bandejas-de-colores-ceramica.jpg';
-import cardTres from '../../assets/platos-colores-ceramica.jpg';
+import Item from '../Item/Item.jsx'
+import getProducts from '../../promise/promise.js';
+import { useState, useEffect } from 'react';
 
-
+import { useParams } from "react-router-dom";
 
 
 function ItemList() {
-  return (
-    <div className='container' style={{display: "flex", justifyContent: 'space-evenly', listStyle: "none", padding: 40, margin: 0, gap: 10, textAlign: "center"}}>
-      <div className='card'>
-        <img src={card} alt="bandejas-grandes-ceramicas"/>
-        <h3>Bandejas</h3>
-        <p>$25.000</p>
-        <button className='btn-btn-secondary' >Agregar</button>
-      </div>
-      <div className='card'>
-        <img src={cardDos} alt="platos-grandes-pintados-a-mano-ceramica" />
-        <h3>Platos Big</h3>
-        <p>$25.000</p>
-        <button className='btn-btn-secondary'>Agregar</button>
-      </div>
-      <div className='card'>
-        <img src={cardTres} alt="platos-pequeños-pintados-a-mano-ceramica" />
-        <h3>Platos Small</h3>
-        <p>$25.000</p>
-        <button className='btn-btn-secondary'>Agregar</button>
-      </div>
+  const [productos, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { categoria } = useParams();
 
+   useEffect(() => {
+    setLoading(true);
+    getProducts()
+      .then(result => {
+        setAllProducts(result);
+
+        if (categoria) {
+          const filtrados = result.filter(el => el.category === categoria);
+          setProducts(filtrados);
+        } else {
+          setProducts(result);
+        }
+
+        setLoading(false);
+      })
+      .catch((err) => alert(err));
+  }, [categoria]);
+
+  if (loading) {
+    return <p>Cargando productos...</p>;
+  }
+
+  return (
+    <div className="card-grid">
+      {productos.length > 0 ? (
+        productos.map((elem) => (
+          <Item key={elem.id} {...elem} />
+        ))
+      ) : (
+        <p>No hay productos en esta categoría.</p>
+      )}
     </div>
-  )
+  );
 }
 
-export default ItemList
+export default ItemList;
