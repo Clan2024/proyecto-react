@@ -42,7 +42,7 @@ function ItemList() {
           <Item key={elem.id} {...elem} />
         ))
       ) : (
-        <p>No hay productos en esta categoría.</p>
+        <p>EROR 404</p>
       )}
     </div>
   );
